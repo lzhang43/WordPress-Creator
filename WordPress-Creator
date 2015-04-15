@@ -1,0 +1,88 @@
+#!/usr/bin/env php
+
+<?php
+
+class WordPress_Creator {
+
+    private $wordpress_git = "https://github.com/WordPress/WordPress.git";
+
+    public function main()
+    {
+        echo "With this script, you can: \n [1] Install a new WordPress \n [2] Generate a theme template \n [3] Generate a plugin template \n\n";
+
+        echo "Please select: ";
+
+        $handle = fopen ("php://stdin","r");
+        $option = trim(fgets($handle));
+
+        switch ($option):
+            case "1":
+                echo "Name for the project: ";
+                $folder = trim(fgets($handle));
+                $folder = $this->file_newname(getcwd(), $folder);
+
+                echo "\nLocation for the project: " . getcwd() . "/" . $folder . "\n";
+                echo "Enter [Y] to continue: ";
+                $confirm = trim(fgets($handle));
+
+                if ($confirm != 'Y' AND $confirm != 'y') {
+                    echo "\033[0;31m\033[48m";
+                    echo "Exiting!\n\n";
+                    echo "\033[0m";
+                    exit;
+                }
+
+                echo "\nPlease wait...\n";
+                echo exec("git clone " . $this->wordpress_git . " -b 4.1-branch --depth 10 " . $folder) . "\n";
+
+                break;
+
+            case "2":
+                echo "2Thanks!\n";
+                break;
+
+            case "3":
+                echo "3Thanks!\n";
+                break;
+
+            default:
+                echo "\033[0;31m\033[48m";
+                echo "Illegal input. Exiting!\n\n";
+                echo "\033[0m";
+                exit;
+        endswitch;
+    }
+
+    private function file_newname($path, $filename)
+    {
+        if ($pos = strrpos($filename, '.'))
+        {
+            $name = substr($filename, 0, $pos);
+            $ext = substr($filename, $pos);
+        }
+        else
+        {
+            $name = $filename;
+            $ext = null;
+        }
+
+        $newpath = $path.'/'.$filename;
+        $newname = $filename;
+        $counter = 2;
+
+        while (file_exists($newpath))
+        {
+            $newname = $name .'_'. $counter . $ext;
+            $newpath = $path.'/'.$newname;
+            $counter++;
+        }
+
+        return $newname;
+    }
+
+}
+
+$WordPress_Creator = new WordPress_Creator();
+$WordPress_Creator->main();
+
+?>
